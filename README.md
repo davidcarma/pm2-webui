@@ -1,2 +1,2 @@
 # pm2-webui
-PM@ program that allows remote pm2 management , with status , and webui 
+PM2 program that allows remote pm2 management , with status , and webui 
