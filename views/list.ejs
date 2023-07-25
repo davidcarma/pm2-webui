@@ -2,87 +2,97 @@
 <html>
 <head>
     <title>PM2 Manager</title>
-    <link rel="stylesheet" type="text/css" href="/styles.css">
-    <script>
-        function manageProcess(name, action) {
-            fetch(`/manage/${name}/${action}`)
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+
+<script>
+    function manageProcess(name, action) {
+        fetch(`./manage/${name}/${action}`)
             .then(() => location.reload())
             .catch((error) => alert('An error occurred: ' + error));
+    }
+
+    // Function to update process data (CPU, Memory, Restarts, and State)
+    async function updateProcessData() {
+        try {
+            const response = await fetch('./states');
+            if (!response.ok) {
+                throw new Error('Failed to fetch process states');
+            }
+
+            const states = await response.json();
+            if (!Array.isArray(states)) {
+                throw new Error('Invalid data format for process states');
+            }
+
+	    console.log ("here");
+	    console.table (states);
+
+            states.forEach(proc => {
+                let stateElement = document.getElementById(proc.name + '-state');
+                let cpuElement = document.getElementById(proc.name + '-cpu');
+                let memoryElement = document.getElementById(proc.name + '-memory');
+                let restartElement = document.getElementById(proc.name + '-restart');
+
+                if (stateElement && stateElement.textContent !== proc.status) {
+                    stateElement.textContent = proc.status;
+                    stateElement.className = `state-${proc.status === 'online' ? 'online' : proc.status === 'stopped' ? 'stopped' : 'other'}`;
+                }
+
+                if (cpuElement && cpuElement.textContent !== proc.cpu + ' %') {
+                    cpuElement.textContent = proc.cpu + ' %';
+                }
+                if (memoryElement && memoryElement.textContent !== (proc.memory / 1024 / 1024).toFixed(2) + ' MB') {
+                    memoryElement.textContent = (proc.memory / 1024 / 1024).toFixed(2) + ' MB';
+                }
+                if (restartElement && restartElement.textContent !== String(proc.restart_time)) {
+                    restartElement.textContent = proc.restart_time;
+                }
+            });
+        } catch (error) {
+            console.log('An error occurred: ' + error);
         }
-    </script>
+    }
+
+    // Update process data every 5 seconds
+    setInterval(updateProcessData, 5000);
+</script>
+
+
 </head>
 <body>
     <table>
         <thead>
-        <tr>
-	        <th>Process #</th>
-	        <th>Name</th>
-	        <th>CPU</th>
-	        <th>Memory</th>
-	        <th>Restarts</th>
-	        <th>State</th>
-	        <th>Actions</th>
-	    </tr>
-	    </thead>
+            <tr>
+                <th>Process #</th>
+                <th>Name</th>
+                <th>CPU</th>
+                <th>Memory</th>
+                <th>Restarts</th>
+                <th>State</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
         <tbody>
-	    <% processList.forEach(function(process, index) { %>
-	        <tr class="<%= index % 2 === 0 ? 'light-blue' : 'white' %>" id="<%= process.name %>">
-		    <td><%= index + 1 %></td>
-		    <td><%= process.name %></td>
-		    <td><%= process.monit.cpu %> %</td>
-		    <td><%= (process.monit.memory / 1024 / 1024).toFixed(2) %> MB</td>
-		    <td><%= process.pm2_env.restart_time %></td>
-		    <td>
-    <span id="<%= process.name %>-state" class="state-<%= process.pm2_env.status === 'online' ? 'online' : process.pm2_env.status === 'stopped' ? 'stopped' : 'other' %>">
-        <%= process.pm2_env.status %>
-    </span>
-</td>
-	
-
-		    <td>
-		        <button class="start" onclick="manageProcess('<%= process.name %>', 'start')">&#9658;</button>
-		        <button class="stop" onclick="manageProcess('<%= process.name %>', 'stop')">&#9724;</button>
-		        <button class="restart" onclick="manageProcess('<%= process.name %>', 'restart')">&#x21bb;</button>
-		    </td>
-	        </tr>
-	    <% }); %>
-
-
-	<script>
-	    setInterval(() => {
-		fetch('/states')
-		    .then(response => response.json())
-		    .then(states => {
-			states.forEach(proc => {
-			    let stateElement = document.getElementById(proc.name + '-state');
-			    let cpuElement = document.getElementById(proc.name + '-cpu');
-			    let memoryElement = document.getElementById(proc.name + '-memory');
-			    let restartElement = document.getElementById(proc.name + '-restart');
-
-		if (stateElement && stateElement.textContent !== proc.status) {
-		    stateElement.textContent = proc.status;
-		    stateElement.className = `state-${proc.status === 'online' ? 'online' : proc.status === 'stopped' ? 'stopped' : 'other'}`;
-		}
-
-
-			    if (cpuElement && cpuElement.textContent !== proc.cpu + ' %') {
-				cpuElement.textContent = proc.cpu + ' %';
-			    }
-			    if (memoryElement && memoryElement.textContent !== proc.memory + ' MB') {
-				memoryElement.textContent = proc.memory + ' MB';
-			    }
-			    if (restartElement && restartElement.textContent !== String(proc.restart_time)) {
-				restartElement.textContent = proc.restart_time;
-			    }
-			});
-		    })
-		    .catch((error) => alert('An error occurred: ' + error));
-	    }, 5000); // Fetches the state every 5 seconds
-	</script>
-
-
-
-	</tbody>
+            <% processList.forEach(function(process, index) { %>
+            <tr class="<%= index % 2 === 0 ? 'light-blue' : 'white' %>" id="<%= process.name %>">
+                <td><%= index + 1 %></td>
+                <td><%= process.name %></td>
+                <td><span id="<%= process.name %>-cpu"><%= process.monit.cpu %> %</span></td>
+                <td><span id="<%= process.name %>-memory"><%= (process.monit.memory / 1024 / 1024).toFixed(2) %> MB</span></td>
+                <td><span id="<%= process.name %>-restart"><%= process.pm2_env.restart_time %></span></td>
+                <td>
+                    <span id="<%= process.name %>-state" class="state-<%= process.pm2_env.status === 'online' ? 'online' : process.pm2_env.status === 'stopped' ? 'stopped' : 'other' %>">
+                        <%= process.pm2_env.status %>
+                    </span>
+                </td>
+                <td>
+                    <button class="start" onclick="manageProcess('<%= process.name %>', 'start')">&#9658;</button>
+                    <button class="stop" onclick="manageProcess('<%= process.name %>', 'stop')">&#9724;</button>
+                    <button class="restart" onclick="manageProcess('<%= process.name %>', 'restart')">&#x21bb;</button>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
     </table>
 </body>
 </html>
