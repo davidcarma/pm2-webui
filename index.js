@@ -126,7 +126,8 @@ app.get('/', function(req, res) {
                 res.status(500).send(err.message);
             } else {
                 console.log('Listing processes');
-                const processList = list.filter(proc => proc.name !== path.basename(__filename, '.js'));
+                const processList = list.filter(proc => (proc.name !== path.basename(__filename, '.js')) && 
+							(proc.name !== "pm2-webui"  )  );
                 res.render('list', { processList });
             }
         });
