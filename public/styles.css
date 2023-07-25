@@ -1,6 +1,9 @@
 body {
     background-color: #0B2239;
     color: #ffffff;
+    font-size: 150%; /* Increasing the text size even more */
+    font-family: 'Courier New', Monospace; /* This will give a CLI feel to your text */
+    /*font-weight: bold; /* This will make your text bolder */
 }
 
 table {
@@ -9,7 +12,7 @@ table {
 }
 
 th, td {
-    padding: 15px;
+    padding: 10px;
     text-align: left;
     border: 1px solid #6996B3;
 }
@@ -81,4 +84,3 @@ button.restart:hover {
 .state-other {
     color: #FFBF00; /* Bright Amber */
 }
-
