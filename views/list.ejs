@@ -41,8 +41,8 @@
                 if (cpuElement && cpuElement.textContent !== proc.cpu + ' %') {
                     cpuElement.textContent = proc.cpu + ' %';
                 }
-                if (memoryElement && memoryElement.textContent !== (proc.memory / 1024 / 1024).toFixed(2) + ' MB') {
-                    memoryElement.textContent = (proc.memory / 1024 / 1024).toFixed(2) + ' MB';
+                if (memoryElement && memoryElement.textContent !== proc.memory  + ' MB') {
+                    memoryElement.textContent = proc.memory  + ' MB';
                 }
                 if (restartElement && restartElement.textContent !== String(proc.restart_time)) {
                     restartElement.textContent = proc.restart_time;
