@@ -1,5 +1,5 @@
 {
-  "name": "pm2-gui",
+  "name": "pm2-webui",
   "version": "1.0.0",
   "description": "PM2 web API to manage Node.js applications",
   "main": "index.js",
@@ -10,8 +10,9 @@
   "dependencies": {
     "ejs": "^3.1.9",
     "express": "^4.17.1",
+    "pmx": "^1.6.7",
     "pm2": "^4.2.3"
   },
-  "author": "",
+  "author": "David Saliba",
   "license": "ISC"
 }
